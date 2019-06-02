@@ -1,0 +1,8 @@
+<h1>Doses#index</h1>
+<p>
+  <ul>
+  <% @doses.each do |id, dose| %>
+    <li><%= dose[:name] %> (<%= dose[:address] %>)</li>
+  <% end %>
+</ul>
+</p>
