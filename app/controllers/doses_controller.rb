@@ -1,23 +1,33 @@
 class DosesController < ApplicationController
+  before_action :set_cocktail, only: [:new, :create]
 
-   DOSES = {
-    1 => { name: "Dishoom", address: "Shoreditch, London", category: "indian" },
-    2 => { name: "Sushi Samba", address: "City, London", category: "japanese" }
-  }
-
-  def index
-    # @doses = DOSES
-
-    # GET /doses?dosage=something_you_typed
-    @category = params[:food_type]
-    @doses = DOSES.select { |id, r| r[:category] == @category }
+  def new
+    @dose = Dose.new
   end
 
-    def create
-    render plain: "Add to DB restaurant '#{params[:name]}' with address '#{params[:address]}'"
+  def create
+    @dose = @cocktail.doses.new(dose_params)
+    if @dose.save
+      redirect_to cocktail_path(@cocktail)
+    else
+      render :new, status: :unprocessable_entity
+    end
   end
 
-   def show
-    @dose = DOSES[params[:id].to_i]
+  def destroy
+    dose = Dose.find(params[:id])
+    cocktail = dose.cocktail
+    dose.destroy
+    redirect_to cocktail_path(cocktail)
+  end
+
+  private
+
+  def set_cocktail
+    @cocktail = Cocktail.find(params[:cocktail_id])
+  end
+
+  def dose_params
+    params.require(:dose).permit(:description, :ingredient_id)
   end
 end
